@@ -5,9 +5,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
@@ -17,13 +19,13 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-
 class CheckoutActivity : Activity() {
 
     private lateinit var paymentsClient: PaymentsClient
     private val LOAD_PAYMENT_DATA_REQUEST_CODE = 991
     private lateinit var googlePayButton:RelativeLayout
     private lateinit var editText:TextInputEditText
+    private lateinit var responseText:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +36,9 @@ class CheckoutActivity : Activity() {
         paymentsClient = PaymentsUtil.createPaymentsClient(this)
         googlePayButton = findViewById(R.id.googlePayButton)
         editText = findViewById(R.id.input_text)
+        responseText= findViewById(R.id.response_txt)
+        responseText.setMovementMethod(ScrollingMovementMethod())
+
         possiblyShowGooglePayButton()
 
         googlePayButton.setOnClickListener { requestPayment() }
@@ -156,6 +161,7 @@ class CheckoutActivity : Activity() {
             // If the gateway is set to "example", no payment information is returned - instead, the
             // token will only consist of "examplePaymentMethodToken".
             Log.e("gpay",paymentMethodData.toString())
+            responseText.text = paymentMethodData.toString()
             if (paymentMethodData
                             .getJSONObject("tokenizationData")
                             .getString("type") == "PAYMENT_GATEWAY" && paymentMethodData
