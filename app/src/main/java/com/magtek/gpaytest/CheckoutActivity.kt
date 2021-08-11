@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -26,6 +27,8 @@ class CheckoutActivity : Activity() {
     private lateinit var googlePayButton:RelativeLayout
     private lateinit var editText:TextInputEditText
     private lateinit var responseText:TextView
+    private lateinit var responseLayout: RelativeLayout
+    private lateinit var shareBtn:Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +41,12 @@ class CheckoutActivity : Activity() {
         editText = findViewById(R.id.input_text)
         responseText= findViewById(R.id.response_txt)
         responseText.setMovementMethod(ScrollingMovementMethod())
-
+        responseLayout = findViewById(R.id.response_layout)
+        shareBtn = findViewById(R.id.share_btn)
         possiblyShowGooglePayButton()
 
         googlePayButton.setOnClickListener { requestPayment() }
+        shareBtn.setOnClickListener { shareResponse()}
     }
 
     /**
@@ -67,6 +72,15 @@ class CheckoutActivity : Activity() {
             }
         }
     }
+
+    private fun shareResponse(){
+        val sharingIntent = Intent(Intent.ACTION_SEND)
+        sharingIntent.type = "text/plain"
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Token Response")
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, responseText.text.toString())
+        startActivity(sharingIntent)
+    }
+
 
     /**
      * If isReadyToPay returned `true`, show the button and hide the "checking" text. Otherwise,
@@ -162,6 +176,7 @@ class CheckoutActivity : Activity() {
             // token will only consist of "examplePaymentMethodToken".
             Log.e("gpay",paymentMethodData.toString())
             responseText.text = paymentMethodData.toString()
+            responseLayout.visibility = View.VISIBLE
             if (paymentMethodData
                             .getJSONObject("tokenizationData")
                             .getString("type") == "PAYMENT_GATEWAY" && paymentMethodData

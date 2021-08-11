@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,6 +32,35 @@
             android:layout_height="@dimen/buy_button_height"
             android:layout_marginTop="20dp"
             android:visibility="gone" />
+        <RelativeLayout
+            android:id="@+id/response_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Response"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="#445566"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                ></TextView>
+
+            <Button
+                android:id="@+id/share_btn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/button_bg"
+                android:text="Share"
+                android:textColor="@color/white"
+                app:backgroundTint="#3F51B5" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/response_txt"
