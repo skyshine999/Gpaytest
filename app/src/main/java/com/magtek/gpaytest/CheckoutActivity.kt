@@ -174,8 +174,11 @@ class CheckoutActivity : Activity() {
 
             // If the gateway is set to "example", no payment information is returned - instead, the
             // token will only consist of "examplePaymentMethodToken".
-            Log.e("gpay",paymentMethodData.toString())
-            responseText.text = paymentMethodData.toString()
+            val jsonResponse = paymentMethodData.toString().replace(Regex("\\\\"), "")
+
+            Log.e("gpay",jsonResponse)
+
+            responseText.text = jsonResponse
             responseLayout.visibility = View.VISIBLE
             if (paymentMethodData
                             .getJSONObject("tokenizationData")
