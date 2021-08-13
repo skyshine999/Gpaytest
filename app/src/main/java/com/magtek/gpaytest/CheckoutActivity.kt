@@ -15,6 +15,8 @@ import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.magtek.gpaytest.R
 import org.json.JSONException
 import org.json.JSONObject
@@ -157,6 +159,18 @@ class CheckoutActivity : Activity() {
         }
     }
 
+    private fun parseJsonObject(jsonData:JSONObject,newObject:JSONObject){
+        val keys: Iterator<String> = jsonData.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            if (jsonData.get(key) is JSONObject) {
+                parseJsonObject(jsonData.get(key) as JSONObject,newObject)
+            }else{
+                newObject.put(key,jsonData.get(key))
+            }
+        }
+    }
+
     /**
      * PaymentData response object contains the payment information, as well as any additional
      * requested information, such as billing and shipping address.
@@ -174,11 +188,25 @@ class CheckoutActivity : Activity() {
 
             // If the gateway is set to "example", no payment information is returned - instead, the
             // token will only consist of "examplePaymentMethodToken".
-            val jsonResponse = paymentMethodData.toString().replace(Regex("\\\\"), "")
 
-            Log.e("gpay",jsonResponse)
+            val tokenData = JSONObject(paymentMethodData
+                .getJSONObject("tokenizationData")
+                .getString("token"))
+            val signedObject = JSONObject(tokenData.getString("signedMessage"))
 
-            responseText.text = jsonResponse
+            val map: MutableMap<String, Any> = LinkedHashMap()
+            val gson = GsonBuilder()
+                .enableComplexMapKeySerialization()
+                .setPrettyPrinting()
+                .create()
+
+            val mapType = object : TypeToken<Map<String?, String?>?>() {}.type
+            map["signature"] = tokenData.getString("signature")
+            map["protocolVersion"] = tokenData.getString("protocolVersion")
+            map["signedMessage"] = gson.fromJson(signedObject.toString(), mapType)
+            Log.d("response",gson.toJson(map))
+
+            responseText.text = gson.toJson(map)
             responseLayout.visibility = View.VISIBLE
             if (paymentMethodData
                             .getJSONObject("tokenizationData")
